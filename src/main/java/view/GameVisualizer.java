@@ -1,6 +1,7 @@
 package view;
 
 import gui.Game;
+import locale.RobotsLocale;
 import log.Logger;
 
 import java.awt.Color;
@@ -11,6 +12,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.text.MessageFormat;
 
 import javax.swing.JPanel;
 
@@ -33,7 +35,13 @@ public class GameVisualizer extends JPanel
     protected void setTargetPosition(Point p)
     {
         Game.INSTANCE.getTarget().setPosition(p.x,p.y);
-        Logger.debug("Target new pos(x, y): " + p.x + " " + p.y);
+        Logger.debug(
+                MessageFormat.format(
+                        RobotsLocale.getINSTANCE().getString("frame.log.msg.target.pos"),
+                        p.x,
+                        p.y
+                )
+        );
     }
     
     public void onRedrawEvent()

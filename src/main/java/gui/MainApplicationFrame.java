@@ -3,6 +3,7 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.util.Locale;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -17,6 +18,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import gui.window.CoordinatesWindow;
 import gui.window.GameWindow;
 import gui.window.LogWindow;
+import locale.RobotsLocale;
 import log.Logger;
 
 /**
@@ -63,7 +65,7 @@ public class MainApplicationFrame extends JFrame
         logWindow.setSize(300, 800);
         setMinimumSize(logWindow.getSize());
         logWindow.pack();
-        Logger.debug("Протокол работает");
+        Logger.debug(RobotsLocale.getINSTANCE().getString("frame.log.msg.start"));
         return logWindow;
     }
     
@@ -106,13 +108,13 @@ public class MainApplicationFrame extends JFrame
     {
         JMenuBar menuBar = new JMenuBar();
         
-        JMenu lookAndFeelMenu = new JMenu("Режим отображения");
+        JMenu lookAndFeelMenu = new JMenu(RobotsLocale.getINSTANCE().getString("menu.look"));
         lookAndFeelMenu.setMnemonic(KeyEvent.VK_V);
         lookAndFeelMenu.getAccessibleContext().setAccessibleDescription(
                 "Управление режимом отображения приложения");
         
         {
-            JMenuItem systemLookAndFeel = new JMenuItem("Системная схема", KeyEvent.VK_S);
+            JMenuItem systemLookAndFeel = new JMenuItem(RobotsLocale.getINSTANCE().getString("menu.look.system"), KeyEvent.VK_S);
             systemLookAndFeel.addActionListener((event) -> {
                 setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 this.invalidate();
@@ -121,7 +123,7 @@ public class MainApplicationFrame extends JFrame
         }
 
         {
-            JMenuItem crossplatformLookAndFeel = new JMenuItem("Универсальная схема", KeyEvent.VK_S);
+            JMenuItem crossplatformLookAndFeel = new JMenuItem(RobotsLocale.getINSTANCE().getString("menu.look.universal"), KeyEvent.VK_S);
             crossplatformLookAndFeel.addActionListener((event) -> {
                 setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                 this.invalidate();
@@ -129,21 +131,38 @@ public class MainApplicationFrame extends JFrame
             lookAndFeelMenu.add(crossplatformLookAndFeel);
         }
 
-        JMenu testMenu = new JMenu("Тесты");
+        JMenu testMenu = new JMenu(RobotsLocale.getINSTANCE().getString("menu.test"));
         testMenu.setMnemonic(KeyEvent.VK_T);
         testMenu.getAccessibleContext().setAccessibleDescription(
                 "Тестовые команды");
         
         {
-            JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
+            JMenuItem addLogMessageItem = new JMenuItem(RobotsLocale.getINSTANCE().getString("menu.test.msg.simple"), KeyEvent.VK_S);
             addLogMessageItem.addActionListener((event) -> {
-                Logger.debug("Новая строка");
+                Logger.debug(RobotsLocale.getINSTANCE().getString("frame.log.msg.simple"));
             });
             testMenu.add(addLogMessageItem);
         }
 
+        JMenu languageMenu = new JMenu(RobotsLocale.getINSTANCE().getString("menu.language"));
+        testMenu.setMnemonic(KeyEvent.VK_T);
+        {
+            JMenuItem ruLocale = new JMenuItem(RobotsLocale.getINSTANCE().getString("menu.language.ru"), KeyEvent.VK_S);
+            ruLocale.addActionListener((event) -> {
+                RobotsLocale.setLang(new Locale("ru", "RU"));
+            });
+            JMenuItem enLocale = new JMenuItem(RobotsLocale.getINSTANCE().getString("menu.language.en"), KeyEvent.VK_S);
+            enLocale.addActionListener((event) -> {
+                RobotsLocale.setLang(new Locale("en", "US"));
+            });
+            languageMenu.add(ruLocale);
+            languageMenu.add(enLocale);
+        }
+
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
+        menuBar.add(languageMenu);
+
         return menuBar;
     }
     

@@ -1,6 +1,7 @@
 package gui.window;
 
 import controler.GameController;
+import locale.RobotsLocale;
 import view.GameVisualizer;
 
 import java.awt.BorderLayout;
@@ -14,7 +15,7 @@ public class GameWindow extends JInternalFrame
     public final GameController m_controler;
     public GameWindow() 
     {
-        super("Игровое поле", true, true, true, true);
+        super(RobotsLocale.getINSTANCE().getString("frame.game"), true, true, true, true);
         //m_visualizer = new GameVisualizer();
         m_controler = new GameController();
         JPanel panel = new JPanel(new BorderLayout());

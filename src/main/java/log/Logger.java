@@ -4,7 +4,7 @@ public final class Logger
 {
     private static final LogWindowSource defaultLogSource;
     static {
-        defaultLogSource = new LogWindowSource(3);
+        defaultLogSource = new LogWindowSource(10);
     }
     
     private Logger()

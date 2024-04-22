@@ -2,6 +2,7 @@ package gui.window;
 
 import controler.GameController;
 import gui.Game;
+import locale.RobotsLocale;
 import model.Robot;
 
 import javax.swing.*;
@@ -13,8 +14,7 @@ public class CoordinatesWindow extends JInternalFrame implements Observer {
     private GameController gameController;
     private JLabel label=new JLabel();
     public CoordinatesWindow(GameController model){
-
-        super ("Координаты поля",true, true, true, true);
+        super(RobotsLocale.getINSTANCE().getString("frame.coordinates"),true, true, true, true);
         gameController =model;
         Game.INSTANCE.getRobot().addObserver(this);
         JPanel panel = new JPanel(new BorderLayout());

@@ -7,6 +7,7 @@ import java.awt.TextArea;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
+import locale.RobotsLocale;
 import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
@@ -18,7 +19,7 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
 
     public LogWindow(LogWindowSource logSource) 
     {
-        super("Протокол работы", true, true, true, true);
+        super(RobotsLocale.getINSTANCE().getString("frame.log"), true, true, true, true);
         m_logSource = logSource;
         m_logSource.registerListener(this);
         m_logContent = new TextArea("");
