@@ -11,7 +11,7 @@ public class LogData implements Iterable<LogEntry> {
 
     private final int maxSize;
     private final List<LogEntry> data;
-    Lock lock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
 
     public LogData(int maxSize)
     {

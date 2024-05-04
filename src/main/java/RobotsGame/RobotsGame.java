@@ -6,10 +6,16 @@ import java.awt.*;
 import java.util.*;
 
 public class RobotsGame extends Observable {
+    public static final RobotsGame INSTANCE = new RobotsGame();
     private final LinkedList<Target> targets = new LinkedList<>();
     private final LinkedList<Robot> robots = new LinkedList<>();
-    private final int length;
-    private final int width;
+    private LinkedList<BaseRobotsGameObject> entities=new LinkedList<>();
+    private final int length=200;
+    private final int width=200;
+
+    public LinkedList<BaseRobotsGameObject> getEntities() {
+        return entities;
+    }
 
     private class Point {
         Point(double a, double b) {
@@ -23,13 +29,13 @@ public class RobotsGame extends Observable {
     private Point getRandomPoint() {
         return new Point(
         (double) (int) (Math.random() * (length) * 100) / 100,
-        (double) (int) (Math.random() * (length) * 100) / 100
+        (double) (int) (Math.random() * (width) * 100) / 100
         );
     }
 
-    public RobotsGame(int numberOfRobots, int numberOfTargets, int length, int width) {
-        this.length = length;
-        this.width = width;
+    private RobotsGame() {
+    }
+    public void StartGame(int numberOfRobots,int numberOfTargets){
         for(int i = 0; i < numberOfRobots; i++) {
             Point p = getRandomPoint();
             Robot robot = new Robot(p.x, p.y, 5, 5, Color.GRAY, Properties.getRandomProperties(), 10);
@@ -47,11 +53,16 @@ public class RobotsGame extends Observable {
                     @Override
                     public void run() {
                         next();
-                        LinkedList<BaseRobotsGameObject> tmp = new LinkedList<>();
-                        tmp.addAll(targets);
-                        tmp.addAll(robots);
+                        entities = new LinkedList<>();
+                        entities.addAll(targets);
+                        entities.addAll(robots);
                         setChanged();
-                        notifyObservers(tmp);
+                        notifyObservers();
+                        clearChanged();
+//                        tmp.addAll(targets);
+//                        tmp.addAll(robots);
+
+
                     }
                 },
                 2000,
@@ -79,6 +90,7 @@ public class RobotsGame extends Observable {
         }
         return closestTarget;
     }
+
 
     private void moveRobotToTarget(Robot robot, Target target) {
         double dist = getDistance(robot, target);

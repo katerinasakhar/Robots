@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -15,7 +17,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import RobotsGame.RobotsGame;
 import gui.window.CoordinatesWindow;
+import gui.window.GameParamWindow;
 import gui.window.GameWindow;
 import gui.window.LogWindow;
 import locale.RobotsLocale;
@@ -33,6 +37,7 @@ public class MainApplicationFrame extends JFrame
     
     public MainApplicationFrame() {
 
+
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
         int inset = 50;        
@@ -44,15 +49,15 @@ public class MainApplicationFrame extends JFrame
         setContentPane(desktopPane);
         
         
-        LogWindow logWindow = createLogWindow();
-        addWindow(logWindow);
+//        LogWindow logWindow = createLogWindow();
+//        addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400,  400);
-        addWindow(gameWindow);
-        CoordinatesWindow coordinatesWindow=new CoordinatesWindow(gameWindow.m_controler);
-        coordinatesWindow.setSize(300,300);
-        addWindow(coordinatesWindow);
+//        GameWindow gameWindow = new GameWindow();
+//        gameWindow.setSize(400,  400);
+//        addWindow(gameWindow);
+//        CoordinatesWindow coordinatesWindow=new CoordinatesWindow(gameWindow.m_controler);
+//        coordinatesWindow.setSize(300,300);
+//        addWindow(coordinatesWindow);
 
         setJMenuBar(generateMenuBar());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -159,9 +164,24 @@ public class MainApplicationFrame extends JFrame
             languageMenu.add(enLocale);
         }
 
+        JMenu gameMenu = new JMenu(RobotsLocale.getINSTANCE().getString("menu.game"));
+        gameMenu.setMnemonic(KeyEvent.VK_G);
+        gameMenu.getAccessibleContext().setAccessibleDescription(
+                "Запуск игры");
+        {
+            JMenuItem robot = new JMenuItem(RobotsLocale.getINSTANCE().getString("menu.game.robot"), KeyEvent.VK_R);
+            robot.addActionListener((event) -> {
+                GameParamWindow gameParamWindow=new GameParamWindow();
+                addWindow(gameParamWindow);
+
+            });
+            gameMenu.add(robot);
+        }
+
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
         menuBar.add(languageMenu);
+        menuBar.add(gameMenu);
 
         return menuBar;
     }
@@ -179,4 +199,6 @@ public class MainApplicationFrame extends JFrame
             // just ignore
         }
     }
+
+
 }
