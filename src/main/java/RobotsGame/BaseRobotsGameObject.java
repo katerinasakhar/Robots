@@ -5,7 +5,6 @@ import java.awt.Color;
 public abstract class BaseRobotsGameObject {
     double x;
     double y;
-    int size;
     Color color;
     Properties properties;
     int energy;
@@ -20,7 +19,7 @@ public abstract class BaseRobotsGameObject {
     }
 
     public int getSize() {
-        return size;
+        return energy;
     }
 
     public Color getColor() {
