@@ -47,9 +47,14 @@ public class RobotsGame extends Observable {
                     @Override
                     public void run() {
                         next();
+                        LinkedList<BaseRobotsGameObject> tmp = new LinkedList<>();
+                        tmp.addAll(targets);
+                        tmp.addAll(robots);
+                        setChanged();
+                        notifyObservers(tmp);
                     }
                 },
-                3000,
+                2000,
                 100
         );
     }
@@ -60,9 +65,57 @@ public class RobotsGame extends Observable {
         return difX*difX + difY*difY;
     }
 
+    private Target getRobotTarget(Robot robot) {
+        double minDistance = length*length+width*width+1;
+        Target closestTarget = null;
+        for(Target target: targets) {
+            if(target.isExist()) {
+                double dist = getDistance(robot, target);
+                if (dist < robot.seeRange && dist < minDistance) {
+                    minDistance = dist;
+                    closestTarget = target;
+                }
+            }
+        }
+        return closestTarget;
+    }
+
+    private void moveRobotToTarget(Robot robot, Target target) {
+        double dist = getDistance(robot, target);
+        robot.energy -= 1;
+        if(Math.abs(dist - robot.speed) < 0.01) {
+            robot.x = target.x;
+            robot.y = target.y;
+            if(target.isExist()) {
+                targets.remove(target);
+                target.exist = false;
+                robot.energy += target.energy;
+                target.getProperties().apply(robot);
+            }
+        }
+        else {
+            double difX = target.x-robot.x;
+            double difY = target.y-robot.y;
+            double newX = robot.x + robot.speed*difX/Math.sqrt(dist);
+            double newY = robot.y + robot.speed*difY/Math.sqrt(dist);
+            robot.x = newX;
+            robot.y = newY;
+        }
+    }
     private void next() {
         for(Robot robot: robots) {
-
+            if(robot.energy > 0) {
+                Target target = getRobotTarget(robot);
+                if (target == null) {
+                    Point p = getRandomPoint();
+                    target = new Target(p.x, p.y, Color.GRAY, Properties.DEFAULT, 0);
+                    target.exist = false;
+                }
+                moveRobotToTarget(robot, target);
+            }
+            else {
+                robots.remove(robot);
+            }
         }
     }
 

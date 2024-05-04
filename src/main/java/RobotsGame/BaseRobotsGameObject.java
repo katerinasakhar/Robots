@@ -27,6 +27,7 @@ public abstract class BaseRobotsGameObject {
     }
 
     public Properties getProperties() {
+        if(properties == null) return Properties.DEFAULT;
         return properties;
     }
 

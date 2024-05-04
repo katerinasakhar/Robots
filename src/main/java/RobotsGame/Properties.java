@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import static java.lang.Math.*;
 
 public class Properties implements Property {
+    public static final Properties DEFAULT = new Properties();
     private LinkedList<Property> properties = new LinkedList<>();
     @Override
     public void apply(Robot robot) {
