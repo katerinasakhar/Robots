@@ -60,7 +60,6 @@ public class RobotsGame extends Observable {
         return difX*difX + difY*difY;
     }
 
-
     private void next() {
         for(Robot robot: robots) {
 
