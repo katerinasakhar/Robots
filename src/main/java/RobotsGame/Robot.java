@@ -5,7 +5,8 @@ import java.awt.*;
 public class Robot extends BaseRobotsGameObject {
     double speed;
     double seeRange;
-    public Robot(double x, double y, double seeRange, double speed, Color color, Properties properties, int energy)
+    int ttl = 15;
+    public Robot(int x, int y, double seeRange, double speed, Color color, Properties properties, int energy)
     {
         this.x = x;
         this.y = y;
@@ -15,5 +16,9 @@ public class Robot extends BaseRobotsGameObject {
         this.energy = energy;
         this.seeRange = seeRange;
         this.exist = true;
+    }
+
+    public double getSpeed() {
+        return Math.max(2, Math.min(speed, 8));
     }
 }

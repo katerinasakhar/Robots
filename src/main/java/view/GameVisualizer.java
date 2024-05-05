@@ -26,19 +26,15 @@ import javax.swing.JPanel;
 
 public class GameVisualizer extends JPanel implements Observer
 {
-    private LinkedList<BaseRobotsGameObject> ent=new LinkedList<>();
-    public GameVisualizer(){
-        RobotsGame.INSTANCE.addObserver(this);
-    }
+    private LinkedList<BaseRobotsGameObject> ent = new LinkedList<>();
 
-        private void drawEntity(Graphics2D g, int x, int y, Color color)
-    {
+    private void drawEntity(Graphics2D g, BaseRobotsGameObject object) {
         AffineTransform t = AffineTransform.getRotateInstance(0, 0, 0);
         g.setTransform(t);
-        g.setColor(color);
-        fillOval(g, x, y, 5, 5);
+        g.setColor(object.getColor());
+        fillOval(g, (int)object.getX(), (int)object.getY(), object.getSize(), object.getSize());
         g.setColor(Color.BLACK);
-        drawOval(g, x, y, 5, 5);
+        drawOval(g, (int)object.getX(), (int)object.getY(), object.getSize(), object.getSize());
     }
 
 
@@ -78,9 +74,11 @@ public class GameVisualizer extends JPanel implements Observer
     {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
-        for (BaseRobotsGameObject el:ent){
-            g.setColor(el.getColor());
-            g.fillOval((int)el.getX(), (int)el.getY(), 5, 5);
+        synchronized (ent) {
+            if(ent.isEmpty()) return;
+            for (BaseRobotsGameObject el : ent) {
+                drawEntity(g2d, el);
+            }
         }
     }
 
@@ -106,11 +104,12 @@ public class GameVisualizer extends JPanel implements Observer
     }
     @Override
     public void update(Observable o, Object arg) {
-        if (o instanceof RobotsGame){
-            ent.clear();
-            ent.addAll(RobotsGame.INSTANCE.getEntities());
-            repaint();
+        if (o instanceof RobotsGame) {
+            synchronized (ent) {
+                ent = (LinkedList<BaseRobotsGameObject>) arg;
+            }
         }
+        onRedrawEvent();
     }
 //
 //    private void drawRobot(Graphics2D g, int x, int y, double direction)

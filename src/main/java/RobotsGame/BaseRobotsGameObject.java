@@ -3,23 +3,23 @@ package RobotsGame;
 import java.awt.Color;
 
 public abstract class BaseRobotsGameObject {
-    double x;
-    double y;
+    int x;
+    int y;
     Color color;
     Properties properties;
     int energy;
     boolean exist;
 
-    public double getX() {
+    public int getX() {
         return x;
     }
 
-    public double getY() {
+    public int getY() {
         return y;
     }
 
     public int getSize() {
-        return energy;
+        return Math.min(Math.max(5, energy), 20);
     }
 
     public Color getColor() {

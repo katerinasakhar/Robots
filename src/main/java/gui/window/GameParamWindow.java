@@ -2,6 +2,7 @@ package gui.window;
 
 import RobotsGame.RobotsGame;
 import locale.RobotsLocale;
+import view.GameVisualizer;
 
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
@@ -12,7 +13,7 @@ import java.awt.event.ActionListener;
 
 import java.text.NumberFormat;
 
-public class GameParamWindow extends JInternalFrame  {
+public class GameParamWindow extends JInternalFrame {
     public GameParamWindow(){
         super(RobotsLocale.getINSTANCE().getString("frame.gameparam"),true, true, true, true);
         NumberFormat numberFormat = NumberFormat.getIntegerInstance();
@@ -34,14 +35,9 @@ public class GameParamWindow extends JInternalFrame  {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Integer robotsNum=Integer.parseInt(numOfRobots.getText());
-                Integer targetsNum=Integer.parseInt(numOfTargets.getText());
-                RobotsGame.INSTANCE.StartGame(robotsNum,targetsNum);
-                RobotsGame.INSTANCE.notifyObservers();
-                openGameWindow();
-
-
-
+                int robotsNum=Integer.parseInt(numOfRobots.getText());
+                int targetsNum=Integer.parseInt(numOfTargets.getText());
+                openGameWindow(robotsNum, targetsNum);
             }
         });
 
@@ -51,8 +47,8 @@ public class GameParamWindow extends JInternalFrame  {
         pack();
     }
 
-    private void openGameWindow() {
-        GameWindow gameWindow = new GameWindow();
+    private void openGameWindow(int robotsNum, int targetsNum) {
+        GameWindow gameWindow = new GameWindow(robotsNum, targetsNum);
         gameWindow.setSize(200,200);
         JDesktopPane desktopPane = getDesktopPane();
         if (desktopPane != null) {

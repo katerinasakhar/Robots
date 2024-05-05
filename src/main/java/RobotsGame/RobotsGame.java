@@ -1,87 +1,87 @@
 package RobotsGame;
 
 import gui.Game;
+import gui.RobotsProgram;
 
 import java.awt.*;
 import java.util.*;
 
 public class RobotsGame extends Observable {
-    public static final RobotsGame INSTANCE = new RobotsGame();
+    private final Timer timer = new Timer("events generator", true);
     private final LinkedList<Target> targets = new LinkedList<>();
     private final LinkedList<Robot> robots = new LinkedList<>();
-    private LinkedList<BaseRobotsGameObject> entities=new LinkedList<>();
-    private final int length=200;
-    private final int width=200;
+    private final int length;
+    private final int width;
 
-    public LinkedList<BaseRobotsGameObject> getEntities() {
-        return entities;
-    }
-
-    private class Point {
-        Point(double a, double b) {
+    private static class Point {
+        Point(int a, int b) {
             x = a;
             y = b;
         }
-        double x;
-        double y;
+        int x;
+        int y;
     }
 
     private Point getRandomPoint() {
         return new Point(
-        (double) (int) (Math.random() * (length) * 100) / 100,
-        (double) (int) (Math.random() * (width) * 100) / 100
+            (int) (Math.random() * (length)),
+            (int) (Math.random() * (length))
         );
     }
 
-    private RobotsGame() {
+    private Target getRandomTarget() {
+        Point p = getRandomPoint();
+        return new Target(p.x, p.y, Color.GRAY, Properties.getRandomProperties(), (int) (Math.random() * 100));
     }
-    public void StartGame(int numberOfRobots,int numberOfTargets){
+
+    private Robot getRandomRobot(Properties properties) {
+        Point p = getRandomPoint();
+        Robot robot = new Robot(p.x, p.y, 10000, 1, Color.WHITE, properties, 100);
+        robot.properties.apply(robot);
+        return robot;
+    }
+
+    public RobotsGame(int numberOfRobots, int numberOfTargets, int length, int width) {
+        this.length = length;
+        this.width = width;
         for(int i = 0; i < numberOfRobots; i++) {
-            Point p = getRandomPoint();
-            Robot robot = new Robot(p.x, p.y, 5, 5, Color.GRAY, Properties.getRandomProperties(), 10);
-            robot.properties.apply(robot);
-            robots.add(robot);
+            robots.add(getRandomRobot(Properties.getRandomProperties()));
         }
         for(int i = 0; i < numberOfTargets; i++) {
-            Point p = getRandomPoint();
-            Target target = new Target(p.x, p.y, Color.GRAY, Properties.getRandomProperties(), (int) (Math.random() * 15));
-            targets.add(target);
+            targets.add(getRandomTarget());
         }
-        var timer = new Timer("events generator", true);
+
         timer.schedule(
                 new TimerTask() {
                     @Override
                     public void run() {
                         next();
-                        entities = new LinkedList<>();
-                        entities.addAll(targets);
-                        entities.addAll(robots);
+                        LinkedList<BaseRobotsGameObject> tmp = new LinkedList<>();
+                        synchronized (timer) {
+                            tmp.addAll(targets);
+                            tmp.addAll(robots);
+                        }
                         setChanged();
-                        notifyObservers();
-                        clearChanged();
-//                        tmp.addAll(targets);
-//                        tmp.addAll(robots);
-
-
+                        notifyObservers(tmp);
                     }
                 },
-                2000,
+                1000,
                 100
         );
     }
 
-    private double getDistance(BaseRobotsGameObject obj1, BaseRobotsGameObject obj2) {
-        double difX = obj1.x - obj2.x;
-        double difY = obj1.y - obj2.y;
+    private int getDistance(BaseRobotsGameObject obj1, BaseRobotsGameObject obj2) {
+        int difX = obj1.x - obj2.x;
+        int difY = obj1.y - obj2.y;
         return difX*difX + difY*difY;
     }
 
     private Target getRobotTarget(Robot robot) {
-        double minDistance = length*length+width*width+1;
+        int minDistance = length*length+width*width+1;
         Target closestTarget = null;
         for(Target target: targets) {
             if(target.isExist()) {
-                double dist = getDistance(robot, target);
+                int dist = getDistance(robot, target);
                 if (dist < robot.seeRange && dist < minDistance) {
                     minDistance = dist;
                     closestTarget = target;
@@ -91,43 +91,65 @@ public class RobotsGame extends Observable {
         return closestTarget;
     }
 
-
     private void moveRobotToTarget(Robot robot, Target target) {
-        double dist = getDistance(robot, target);
-        robot.energy -= 1;
-        if(Math.abs(dist - robot.speed) < 0.01) {
+        int dist = getDistance(robot, target);
+        robot.energy--;
+        robot.ttl--;
+        if(dist <= robot.getSpeed()*robot.getSpeed()) {
             robot.x = target.x;
             robot.y = target.y;
             if(target.isExist()) {
                 targets.remove(target);
+                targets.add(getRandomTarget());
                 target.exist = false;
                 robot.energy += target.energy;
                 target.getProperties().apply(robot);
             }
         }
         else {
-            double difX = target.x-robot.x;
-            double difY = target.y-robot.y;
-            double newX = robot.x + robot.speed*difX/Math.sqrt(dist);
-            double newY = robot.y + robot.speed*difY/Math.sqrt(dist);
+            int difX = target.x-robot.x;
+            int difY = target.y-robot.y;
+            int newX = (int)(robot.x + robot.getSpeed()/(Math.sqrt(dist)-Math.random()/10)*difX);
+            int newY = (int)(robot.y + robot.getSpeed()/(Math.sqrt(dist)-Math.random()/10)*difY);
             robot.x = newX;
             robot.y = newY;
         }
     }
     private void next() {
-        for(Robot robot: robots) {
-            if(robot.energy > 0) {
-                Target target = getRobotTarget(robot);
-                if (target == null) {
-                    Point p = getRandomPoint();
-                    target = new Target(p.x, p.y, Color.GRAY, Properties.DEFAULT, 0);
-                    target.exist = false;
+        synchronized (timer) {
+            if (robots.isEmpty()) {
+                timer.cancel();
+                return;
+            }
+            LinkedList<Robot> robots1 = new LinkedList<>();
+            for (Robot robot : robots) {
+                if (robot.energy > 0) {
+                    Target target = getRobotTarget(robot);
+                    if (target == null) {
+                        Point p = getRandomPoint();
+                        target = new Target(p.x, p.y, Color.GRAY, Properties.DEFAULT, 0);
+                        target.exist = false;
+                    }
+                    moveRobotToTarget(robot, target);
+                    if(robot.ttl <= 0 && robot.energy >= 100) {
+                        Robot robot1 = getRandomRobot(robot.properties);
+                        Robot robot2 = getRandomRobot(robot.properties);
+                        robot1.energy = robot.energy/2;
+                        robot1.x = robot.x+5;
+                        robot1.y = robot.y+5;
+                        robot2.energy = robot.energy/2;
+                        robot2.x = robot.x-5;
+                        robot2.y = robot.y-5;
+                        robots1.add(robot1);
+                        robots1.add(robot2);
+                    }
+                    else {
+                        robots1.add(robot);
+                    }
                 }
-                moveRobotToTarget(robot, target);
             }
-            else {
-                robots.remove(robot);
-            }
+            robots.clear();
+            robots.addAll(robots1);
         }
     }
 

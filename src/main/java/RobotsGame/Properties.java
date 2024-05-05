@@ -39,52 +39,49 @@ public class Properties implements Property {
                 robot.color = Color.CYAN;
             },
             (Robot robot) -> {
-                robot.speed += 5;
+                robot.speed *= 2;
             },
             (Robot robot) -> {
-                robot.speed += 10;
+                robot.speed *= 1.5;
             },
             (Robot robot) -> {
-                robot.speed = max(robot.speed-7, 0);
+                robot.speed /= 2;
             },
             (Robot robot) -> {
-                robot.speed = max(robot.speed-13, 0);
+                robot.speed /= 3;
             },
             (Robot robot) -> {
-                robot.speed += 3;
+                robot.speed *= 2.5;
             },
             (Robot robot) -> {
-                robot.speed += 8;
+                robot.speed *= 3;
             },
             (Robot robot) -> {
-                robot.speed = max(robot.speed-9, 0);
+                robot.speed /= 1.5;
             },
             (Robot robot) -> {
-                robot.speed = max(robot.speed-2, 0);
+                robot.speed /= 2.5;
             },
             (Robot robot) -> {
-                robot.seeRange += 2;
+                robot.seeRange *= 2;
             },
             (Robot robot) -> {
-                robot.seeRange = max(robot.seeRange-1, 0);
+                robot.seeRange /= 2;
             },
             (Robot robot) -> {
-                robot.seeRange += 6;
+                robot.seeRange *= 4;
             },
             (Robot robot) -> {
-                robot.seeRange = max(robot.seeRange-3, 0);
+                robot.seeRange /= 3;
             },
             (Robot robot) -> {
-                robot.exist = false;
+                robot.ttl /= 3;
             },
             (Robot robot) -> {
-                robot.exist = false;
+                robot.ttl *= 3;
             },
             (Robot robot) -> {
-                robot.exist = false;
-            },
-            (Robot robot) -> {
-                robot.exist = false;
+                robot.energy = 0;
             }
         };
 
