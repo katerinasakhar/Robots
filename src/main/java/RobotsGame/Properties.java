@@ -1,13 +1,13 @@
 package RobotsGame;
 
 import java.awt.Color;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import static java.lang.Math.*;
 
 public class Properties implements Property {
     public static final Properties DEFAULT = new Properties();
-    private LinkedList<Property> properties = new LinkedList<>();
+    private final ArrayList<Property> properties = new ArrayList<>();
     @Override
     public void apply(Robot robot) {
         for(Property property: properties) {

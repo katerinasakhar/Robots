@@ -6,7 +6,14 @@ public class Robot extends BaseRobotsGameObject {
     double speed;
     double seeRange;
     int ttl = 15;
-    public Robot(int x, int y, double seeRange, double speed, Color color, Properties properties, int energy)
+    public Robot(
+            int x,
+            int y,
+            double seeRange,
+            double speed,
+            Color color,
+            Properties properties,
+            int energy)
     {
         this.x = x;
         this.y = y;

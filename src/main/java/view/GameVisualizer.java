@@ -15,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
@@ -26,7 +27,7 @@ import javax.swing.JPanel;
 
 public class GameVisualizer extends JPanel implements Observer
 {
-    private LinkedList<BaseRobotsGameObject> ent = new LinkedList<>();
+    private ArrayList<BaseRobotsGameObject> ent = new ArrayList<BaseRobotsGameObject>();
 
     private void drawEntity(Graphics2D g, BaseRobotsGameObject object) {
         AffineTransform t = AffineTransform.getRotateInstance(0, 0, 0);
@@ -106,7 +107,7 @@ public class GameVisualizer extends JPanel implements Observer
     public void update(Observable o, Object arg) {
         if (o instanceof RobotsGame) {
             synchronized (ent) {
-                ent = (LinkedList<BaseRobotsGameObject>) arg;
+                ent = (ArrayList<BaseRobotsGameObject>) arg;
             }
         }
         onRedrawEvent();

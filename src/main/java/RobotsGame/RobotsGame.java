@@ -8,10 +8,35 @@ import java.util.*;
 
 public class RobotsGame extends Observable {
     private final Timer timer = new Timer("events generator", true);
-    private final LinkedList<Target> targets = new LinkedList<>();
-    private final LinkedList<Robot> robots = new LinkedList<>();
-    private final int length;
-    private final int width;
+    private final ArrayList<Target> targets = new ArrayList<>();
+    private final ArrayList<Robot> robots = new ArrayList<>();
+    private volatile int length;
+    private volatile int width;
+    private final Object sizeLock = new Object();
+
+    public int getLength() {
+        synchronized (sizeLock) {
+            return length;
+        }
+    }
+
+    public int getWidth() {
+        synchronized (sizeLock) {
+            return width;
+        }
+    }
+
+    public void setLength(int length) {
+        synchronized (sizeLock) {
+            this.length = length;
+        }
+    }
+
+    public void setWidth(int width) {
+        synchronized (sizeLock) {
+            this.width = width;
+        }
+    }
 
     private static class Point {
         Point(int a, int b) {
@@ -24,8 +49,8 @@ public class RobotsGame extends Observable {
 
     private Point getRandomPoint() {
         return new Point(
-            (int) (Math.random() * (length)),
-            (int) (Math.random() * (length))
+            (int) (Math.random() * (getLength())),
+            (int) (Math.random() * (getWidth()))
         );
     }
 
@@ -56,7 +81,7 @@ public class RobotsGame extends Observable {
                     @Override
                     public void run() {
                         next();
-                        LinkedList<BaseRobotsGameObject> tmp = new LinkedList<>();
+                        ArrayList<BaseRobotsGameObject> tmp = new ArrayList<>();
                         synchronized (timer) {
                             tmp.addAll(targets);
                             tmp.addAll(robots);
@@ -77,7 +102,7 @@ public class RobotsGame extends Observable {
     }
 
     private Target getRobotTarget(Robot robot) {
-        int minDistance = length*length+width*width+1;
+        int minDistance = getLength()*getLength()+getWidth()*getWidth()+1;
         Target closestTarget = null;
         for(Target target: targets) {
             if(target.isExist()) {
@@ -121,7 +146,7 @@ public class RobotsGame extends Observable {
                 timer.cancel();
                 return;
             }
-            LinkedList<Robot> robots1 = new LinkedList<>();
+            ArrayList<Robot> robots1 = new ArrayList<>();
             for (Robot robot : robots) {
                 if (robot.energy > 0) {
                     Target target = getRobotTarget(robot);
